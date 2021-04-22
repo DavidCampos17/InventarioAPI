@@ -59,5 +59,36 @@ namespace InventarioAPI.Controllers
             }
 
         }
+
+        [HttpPost]
+        [Route("/registrarCategoria")]
+        public IActionResult registrarCategoria(Categoria objCategoria)
+        {
+            Conexion objConexion = new Conexion(_IConfiguration);
+            var cn = objConexion.getConexion();
+            string msj = "";
+            try
+            {
+                cn.Open();
+                using (SqlCommand cmd = new SqlCommand("spNuevaCategoria", cn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@categoria", SqlDbType.NVarChar).Value = objCategoria.categoria;
+                    int i = cmd.ExecuteNonQuery();
+
+                    return Ok(new { msj = "Se a creado " + i + " categoria" });
+                }
+            }
+            catch (Exception)
+            {
+                cn.Close();
+                return BadRequest();
+                throw;
+            }
+            finally
+            {
+                cn.Close();
+            }
+        }
     }
 }
