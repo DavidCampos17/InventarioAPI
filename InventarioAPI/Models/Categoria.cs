@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace InventarioAPI.Models
 {
-    public class Categorias
+    public class Categoria
     {
         public int idCategoria { get; set; }
         public string categoria { get; set; }

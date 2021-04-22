@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace InventarioAPI.Models
 {
-    public class Colores
+    public class Color
     {
         public int idColor { get; set; }
         public string color { get; set; }
