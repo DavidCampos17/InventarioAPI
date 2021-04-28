@@ -10,11 +10,9 @@ using System.Data;
 
 namespace InventarioAPI.Controllers
 {
-    [ApiController]
-    [Route("api/Categorias")]
+
     public class CategoriasController : Controller
     {
-
         private readonly IConfiguration _IConfiguration;
         public CategoriasController(IConfiguration configuration)
         {
@@ -23,7 +21,7 @@ namespace InventarioAPI.Controllers
 
 
         [HttpGet]
-        [Route("/getCategorias")]
+        [Route("/api/Categorias/getCategorias")]
         public IActionResult getCategorias()
         {
             Conexion objConexion = new Conexion(_IConfiguration);
@@ -61,7 +59,7 @@ namespace InventarioAPI.Controllers
         }
 
         [HttpPost]
-        [Route("/registrarCategoria")]
+        [Route("/api/Categorias/registrarCategoria")]
         public IActionResult registrarCategoria(Categoria objCategoria)
         {
             Conexion objConexion = new Conexion(_IConfiguration);
