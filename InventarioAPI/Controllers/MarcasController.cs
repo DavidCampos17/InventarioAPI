@@ -1,54 +1,54 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using InventarioAPI.Models;
-using System.Data.SqlClient;
 using System.Data;
+using Microsoft.Extensions.Configuration;
 
 namespace InventarioAPI.Controllers
 {
-
-    public class CategoriasController : Controller
+    public class MarcasController : Controller
     {
         private readonly IConfiguration _IConfiguration;
-        public CategoriasController(IConfiguration configuration)
+        string msj = "";
+        public MarcasController(IConfiguration configuration)
         {
             _IConfiguration = configuration;
         }
 
-
         [HttpGet]
-        [Route("/api/Categorias/getCategorias")]
-        public IActionResult getCategorias()
+        [Route("/api/Marcas/getMarcas")]
+        public IActionResult getMarcas()
         {
             Conexion objConexion = new Conexion(_IConfiguration);
             var cn = objConexion.getConexion();
-            List<Categoria> listaCategorias = new List<Categoria>();
+            List<Marca> listaMarcas = new List<Marca>();
             try
             {
                 cn.Open();
-                using (SqlCommand cmd = new SqlCommand("spListarCategorias", cn))
+                using (SqlCommand cmd = new SqlCommand("spGetMarcas", cn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
                     SqlDataReader dr = cmd.ExecuteReader();
                     while (dr.Read())
                     {
-                        listaCategorias.Add(new Categoria
+                        listaMarcas.Add(new Marca
                         {
-                            categoria = dr["categoria"].ToString(),
-                            idCategoria = int.Parse(dr["idCategoria"].ToString())
+                            marca = dr["marca"].ToString(),
+                            idMarca = int.Parse(dr["idMarca"].ToString())
                         });
                     }
                 }
-                return Ok(listaCategorias);
+                return Ok(listaMarcas);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return BadRequest();
+                msj = e.Message;
                 cn.Close();
+                return BadRequest(msj);
                 throw;
             }
             finally
@@ -58,29 +58,30 @@ namespace InventarioAPI.Controllers
 
         }
 
+
         [HttpPost]
-        [Route("/api/Categorias/registrarCategoria")]
-        public IActionResult registrarCategoria(Categoria objCategoria)
+        [Route("/api/Marcas/registrarMarca")]
+        public IActionResult registrarMarca(Marca objMarca)
         {
             Conexion objConexion = new Conexion(_IConfiguration);
             var cn = objConexion.getConexion();
-            string msj = "";
             try
             {
                 cn.Open();
-                using (SqlCommand cmd = new SqlCommand("spNuevaCategoria", cn))
+                using (SqlCommand cmd = new SqlCommand("spNuevaMarca", cn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Add("@categoria", SqlDbType.NVarChar).Value = objCategoria.categoria;
+                    cmd.Parameters.Add("@marca", SqlDbType.NVarChar).Value = objMarca.marca;
                     int i = cmd.ExecuteNonQuery();
 
-                    return Ok(new { msj = "Se a creado " + i + " categoria" });
+                    return Ok(new { msj = "Se a creado " + i + " marca" });
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 cn.Close();
-                return BadRequest();
+                msj = e.Message;
+                return BadRequest(msj);
                 throw;
             }
             finally
@@ -90,74 +91,76 @@ namespace InventarioAPI.Controllers
         }
 
         [HttpGet]
-        [Route("api/Categorias/getCategoria/{idCategoria}")]
-        public IActionResult getCategoria(int idCategoria)
+        [Route("api/Marcas/getMarca/{idMarca}")]
+        public IActionResult getMarca(int idMarca)
         {
             Conexion objConexion = new Conexion(_IConfiguration);
             var cn = objConexion.getConexion();
-            Categoria objCategoria = null;
+            Marca objMarca = null;
             try
             {
                 cn.Open();
-                using (SqlCommand cmd = new SqlCommand("spGetCategoria", cn))
+                using (SqlCommand cmd = new SqlCommand("spGetMarca", cn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Add("@idCategoria", SqlDbType.Int).Value = idCategoria;
+                    cmd.Parameters.Add("@idMarca", SqlDbType.Int).Value = idMarca;
                     SqlDataReader dr = cmd.ExecuteReader();
                     while (dr.Read())
                     {
 
-                        objCategoria = new Categoria
+                        objMarca = new Marca
                         {
-                            categoria = dr["categoria"].ToString(),
-                            idCategoria = int.Parse(dr["idCategoria"].ToString())
+                            marca = dr["marca"].ToString(),
+                            idMarca = int.Parse(dr["idMarca"].ToString())
                         };
                     }
                 }
-                return Ok(objCategoria);
+                return Ok(objMarca);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return BadRequest();
+                msj = e.Message;
                 cn.Close();
+                return BadRequest(msj);
                 throw;
             }
             finally
             {
                 cn.Close();
+
             }
         }
 
         [HttpPut]
-        [Route("/api/Categorias/ActualizarCategoria")]
-        public IActionResult actualizarCategoria(Categoria objCategoria)
+        [Route("/api/Marcas/ActualizarMarca")]
+        public IActionResult actualizarMarca(Marca objMarca)
         {
             Conexion objConexion = new Conexion(_IConfiguration);
             var cn = objConexion.getConexion();
-            string msj = "";
             try
             {
                 cn.Open();
-                using (SqlCommand cmd = new SqlCommand("spActualizarCategoria", cn))
+                using (SqlCommand cmd = new SqlCommand("spActualizarMarca", cn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Add("@idCategoria", SqlDbType.Int).Value = objCategoria.idCategoria;
-                    cmd.Parameters.Add("@categoria", SqlDbType.NVarChar).Value = objCategoria.categoria;
+                    cmd.Parameters.Add("@idMarca", SqlDbType.Int).Value = objMarca.idMarca;
+                    cmd.Parameters.Add("@marca", SqlDbType.NVarChar).Value = objMarca.marca;
                     int i = cmd.ExecuteNonQuery();
                     if (i == 1)
                     {
-                        return Ok(new { msj = "Se actualizó la categoría " });
+                        return Ok(new { msj = "Se actualizó la marca " });
                     }
                     else
                     {
-                        return Ok(new { msj = "La categoría " + objCategoria.categoria + " no se actualizó" });
+                        return Ok(new { msj = "La marca " + objMarca.marca + " no se actualizó" });
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 cn.Close();
-                return BadRequest();
+                msj = e.Message;
+                return BadRequest(msj);
                 throw;
             }
             finally
@@ -167,8 +170,8 @@ namespace InventarioAPI.Controllers
         }
 
         [HttpDelete]
-        [Route("/api/Categorias/delCategoria/{idCategoria}")]
-        public IActionResult delCategoria(int idCategoria)
+        [Route("/api/Marcas/delMarca/{idMarca}")]
+        public IActionResult delMarca(int idMarca)
         {
             Conexion objConexion = new Conexion(_IConfiguration);
             var cn = objConexion.getConexion();
@@ -176,25 +179,26 @@ namespace InventarioAPI.Controllers
             try
             {
                 cn.Open();
-                using (SqlCommand cmd = new SqlCommand("spDelCategoria", cn))
+                using (SqlCommand cmd = new SqlCommand("spEliminarMarca", cn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Add("@idCategoria", SqlDbType.Int).Value = idCategoria;
+                    cmd.Parameters.Add("@idMarca", SqlDbType.Int).Value = idMarca;
                     int i = cmd.ExecuteNonQuery();
                     if (i == 1)
                     {
-                        return Ok(new { msj = "Se a eliminado " + i + " categoria." });
+                        return Ok(new { msj = "Se a eliminado " + i + " marca." });
                     }
                     else
                     {
-                        return Ok(new { msj = "La categoría no se eliminó" });
+                        return Ok(new { msj = "La marca no se eliminó" });
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return BadRequest();
                 cn.Close();
+                msj = e.Message;
+                return BadRequest(e.Message);
                 throw;
             }
             finally

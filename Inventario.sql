@@ -13,15 +13,14 @@ GO
 
 
 create table Usuarios(
-idUsuario int identity(2,1),
+idUsuario int identity(1,1),
 nombreUsuario nvarchar(20),
 apellidoPadre nvarchar(20),
 apellidoMadre nvarchar(20),
 correo nvarchar(50),
 usuario nvarchar(20),
-contrasena nvarchar(8),
+contrasena nvarchar(100),
 primary key clustered (idUsuario),
-constraint FK_Usuarios_Usuarios  foreign key (idUsuario) references Usuarios(idUsuario)
 )
 go
 
@@ -36,7 +35,7 @@ create table Categorias
 )
 go
 
-create table Marca(
+create table Marcas(
 idMarca int identity (1,1),
 marca nvarchar(50),
 fechaCreacion datetime,
@@ -81,7 +80,7 @@ idMoneda int,
 idUsuario int
 primary key clustered (idProducto),
 constraint FK_Producto_Categoria foreign key (idCategoria) references Categorias (idCategoria),
-constraint FK_Producto_Marca foreign key (idMarca) references Marca (idMarca),
+constraint FK_Producto_Marca foreign key (idMarca) references Marcas(idMarca),
 constraint FK_Producto_Colores foreign key (idColor) references Colores (idColor),
 constraint FK_Producto_Moneda  foreign key (idMoneda) references Monedas(idMoneda),
 constraint FK_Producto_Usuarios  foreign key (idUsuario) references Usuarios(idUsuario)
@@ -134,12 +133,9 @@ constraint fk_OrdenDetalle_Orden foreign key (idOrden) references Ordenes(idOrde
 
 GO
 
-/*CATEGORIAS*/
 
-
-
-/*PRODUCTOS*/
-create proc listarProductos
+/*CRUD PRODUCTOS*/
+create proc spListarProductos
 AS
 	select producto, SKU, numeroProducto, fechaCompra, 
 	fechaVenta, cantidad, precio from Productos
@@ -178,7 +174,7 @@ go
 create proc spGetCategoria(@idCategoria INT)
 as
 	SELECT [idCategoria]
-      ,[categoria],
+      ,[categoria]
   FROM [dbo].[Categorias] where idCategoria= @idCategoria;
 go
 
@@ -191,3 +187,30 @@ create proc spDelCategoria(@idCategoria int)
 as
 	delete Categorias where idCategoria=@idCategoria;
 go
+
+/*CRUD MARCA*/
+create proc spNuevaMarca(@marca nvarchar(50))
+as
+	insert into Marcas(marca) values(@marca)
+go
+
+create proc spGetMarcas
+as
+	select marca from Marcas
+go
+
+create proc spGetMarca(@idMarca int)
+as
+	select idMarca, marca from Marcas where idMarca = @idMarca;
+go
+
+create proc spActualizarMarca(@idMarca int, @marca nvarchar(50) )
+as
+	update Marcas set marca = @marca where idMarca= @idMarca;
+go
+
+create proc spEliminarMarca (@idMarca int)
+as
+	delete Marcas where idMarca=@idMarca
+go
+
