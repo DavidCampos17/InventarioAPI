@@ -1,54 +1,54 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using InventarioAPI.Models;
 using System.Data.SqlClient;
+using InventarioAPI.Models;
 using System.Data;
+using Microsoft.Extensions.Configuration;
 
 namespace InventarioAPI.Controllers
 {
-
-    public class CategoriasController : Controller
+    public class ColoresController : Controller
     {
         private readonly IConfiguration _IConfiguration;
-        public CategoriasController(IConfiguration configuration)
+        string msj = "";
+        public ColoresController(IConfiguration configuration)
         {
             _IConfiguration = configuration;
         }
 
-
         [HttpGet]
-        [Route("/api/Categorias/getCategorias")]
-        public IActionResult getCategorias()
+        [Route("/api/Colores/getColores")]
+        public IActionResult getColores()
         {
             Conexion objConexion = new Conexion(_IConfiguration);
             var cn = objConexion.getConexion();
-            List<Categoria> listaCategorias = new List<Categoria>();
+            List<Color> listaColores = new List<Color>();
             try
             {
                 cn.Open();
-                using (SqlCommand cmd = new SqlCommand("spListarCategorias", cn))
+                using (SqlCommand cmd = new SqlCommand("spGetColores", cn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
                     SqlDataReader dr = cmd.ExecuteReader();
                     while (dr.Read())
                     {
-                        listaCategorias.Add(new Categoria
+                        listaColores.Add(new Color
                         {
-                            categoria = dr["categoria"].ToString(),
-                            idCategoria = int.Parse(dr["idCategoria"].ToString())
+                            color = dr["color"].ToString(),
+                            idColor = int.Parse(dr["idColor"].ToString())
                         });
                     }
                 }
-                return Ok(listaCategorias);
+                return Ok(listaColores);
             }
             catch (Exception e)
             {
+                msj = e.Message;
                 cn.Close();
-                return BadRequest(e.Message);
+                return BadRequest(msj);
                 throw;
             }
             finally
@@ -58,29 +58,30 @@ namespace InventarioAPI.Controllers
 
         }
 
+
         [HttpPost]
-        [Route("/api/Categorias/registrarCategoria")]
-        public IActionResult registrarCategoria(Categoria objCategoria)
+        [Route("/api/Colores/registrarColor")]
+        public IActionResult registrarColor(Color objColor)
         {
             Conexion objConexion = new Conexion(_IConfiguration);
             var cn = objConexion.getConexion();
-            string msj = "";
             try
             {
                 cn.Open();
-                using (SqlCommand cmd = new SqlCommand("spNuevaCategoria", cn))
+                using (SqlCommand cmd = new SqlCommand("spNuevaColor", cn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Add("@categoria", SqlDbType.NVarChar).Value = objCategoria.categoria;
+                    cmd.Parameters.Add("@color", SqlDbType.NVarChar).Value = objColor.color;
                     int i = cmd.ExecuteNonQuery();
 
-                    return Ok(new { msj = "Se a creado " + i + " categoria" });
+                    return Ok(new { msj = "Se a creado " + i + " color" });
                 }
             }
             catch (Exception e)
             {
                 cn.Close();
-                return BadRequest(e.Message);
+                msj = e.Message;
+                return BadRequest(msj);
                 throw;
             }
             finally
@@ -90,74 +91,76 @@ namespace InventarioAPI.Controllers
         }
 
         [HttpGet]
-        [Route("api/Categorias/getCategoria/{idCategoria}")]
-        public IActionResult getCategoria(int idCategoria)
+        [Route("api/Colores/getColor/{idColor}")]
+        public IActionResult getColor(int idColor)
         {
             Conexion objConexion = new Conexion(_IConfiguration);
             var cn = objConexion.getConexion();
-            Categoria objCategoria = null;
+            Color objColor = null;
             try
             {
                 cn.Open();
-                using (SqlCommand cmd = new SqlCommand("spGetCategoria", cn))
+                using (SqlCommand cmd = new SqlCommand("spGetColor", cn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Add("@idCategoria", SqlDbType.Int).Value = idCategoria;
+                    cmd.Parameters.Add("@idColor", SqlDbType.Int).Value = idColor;
                     SqlDataReader dr = cmd.ExecuteReader();
                     while (dr.Read())
                     {
 
-                        objCategoria = new Categoria
+                        objColor = new Color
                         {
-                            categoria = dr["categoria"].ToString(),
-                            idCategoria = int.Parse(dr["idCategoria"].ToString())
+                            color = dr["color"].ToString(),
+                            idColor = int.Parse(dr["idColor"].ToString())
                         };
                     }
                 }
-                return Ok(objCategoria);
+                return Ok(objColor);
             }
             catch (Exception e)
             {
+                msj = e.Message;
                 cn.Close();
-                return BadRequest(e.Message);
+                return BadRequest(msj);
                 throw;
             }
             finally
             {
                 cn.Close();
+
             }
         }
 
         [HttpPut]
-        [Route("/api/Categorias/ActualizarCategoria")]
-        public IActionResult actualizarCategoria(Categoria objCategoria)
+        [Route("/api/Colores/ActualizarColor")]
+        public IActionResult actualizarColor(Color objColor)
         {
             Conexion objConexion = new Conexion(_IConfiguration);
             var cn = objConexion.getConexion();
-            string msj = "";
             try
             {
                 cn.Open();
-                using (SqlCommand cmd = new SqlCommand("spActualizarCategoria", cn))
+                using (SqlCommand cmd = new SqlCommand("spActualizarColor", cn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Add("@idCategoria", SqlDbType.Int).Value = objCategoria.idCategoria;
-                    cmd.Parameters.Add("@categoria", SqlDbType.NVarChar).Value = objCategoria.categoria;
+                    cmd.Parameters.Add("@idColor", SqlDbType.Int).Value = objColor.idColor;
+                    cmd.Parameters.Add("@color", SqlDbType.NVarChar).Value = objColor.color;
                     int i = cmd.ExecuteNonQuery();
                     if (i == 1)
                     {
-                        return Ok(new { msj = "Se actualizó la categoría " });
+                        return Ok(new { msj = "Se actualizó la color " });
                     }
                     else
                     {
-                        return Ok(new { msj = "La categoría " + objCategoria.categoria + " no se actualizó" });
+                        return Ok(new { msj = "La color " + objColor.color + " no se actualizó" });
                     }
                 }
             }
             catch (Exception e)
             {
                 cn.Close();
-                return BadRequest(e.Message);
+                msj = e.Message;
+                return BadRequest(msj);
                 throw;
             }
             finally
@@ -167,8 +170,8 @@ namespace InventarioAPI.Controllers
         }
 
         [HttpDelete]
-        [Route("/api/Categorias/delCategoria/{idCategoria}")]
-        public IActionResult delCategoria(int idCategoria)
+        [Route("/api/Colores/delColor/{idColor}")]
+        public IActionResult delColor(int idColor)
         {
             Conexion objConexion = new Conexion(_IConfiguration);
             var cn = objConexion.getConexion();
@@ -176,24 +179,25 @@ namespace InventarioAPI.Controllers
             try
             {
                 cn.Open();
-                using (SqlCommand cmd = new SqlCommand("spDelCategoria", cn))
+                using (SqlCommand cmd = new SqlCommand("spEliminarColor", cn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Add("@idCategoria", SqlDbType.Int).Value = idCategoria;
+                    cmd.Parameters.Add("@idColor", SqlDbType.Int).Value = idColor;
                     int i = cmd.ExecuteNonQuery();
                     if (i == 1)
                     {
-                        return Ok(new { msj = "Se a eliminado " + i + " categoria." });
+                        return Ok(new { msj = "Se a eliminado " + i + " color." });
                     }
                     else
                     {
-                        return Ok(new { msj = "La categoría no se eliminó" });
+                        return Ok(new { msj = "La Color no se eliminó" });
                     }
                 }
             }
             catch (Exception e)
             {
                 cn.Close();
+                msj = e.Message;
                 return BadRequest(e.Message);
                 throw;
             }
@@ -203,4 +207,5 @@ namespace InventarioAPI.Controllers
             }
         }
     }
+
 }

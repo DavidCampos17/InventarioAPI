@@ -1,54 +1,54 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using InventarioAPI.Models;
 using System.Data.SqlClient;
+using InventarioAPI.Models;
 using System.Data;
+using Microsoft.Extensions.Configuration;
 
 namespace InventarioAPI.Controllers
 {
-
-    public class CategoriasController : Controller
+    public class MonedasController : Controller
     {
         private readonly IConfiguration _IConfiguration;
-        public CategoriasController(IConfiguration configuration)
+        string msj = "";
+        public MonedasController(IConfiguration configuration)
         {
             _IConfiguration = configuration;
         }
 
-
         [HttpGet]
-        [Route("/api/Categorias/getCategorias")]
-        public IActionResult getCategorias()
+        [Route("/api/Monedas/getMonedas")]
+        public IActionResult getMonedas()
         {
             Conexion objConexion = new Conexion(_IConfiguration);
             var cn = objConexion.getConexion();
-            List<Categoria> listaCategorias = new List<Categoria>();
+            List<Moneda> listaMonedas = new List<Moneda>();
             try
             {
                 cn.Open();
-                using (SqlCommand cmd = new SqlCommand("spListarCategorias", cn))
+                using (SqlCommand cmd = new SqlCommand("spGetMonedas", cn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
                     SqlDataReader dr = cmd.ExecuteReader();
                     while (dr.Read())
                     {
-                        listaCategorias.Add(new Categoria
+                        listaMonedas.Add(new Moneda
                         {
-                            categoria = dr["categoria"].ToString(),
-                            idCategoria = int.Parse(dr["idCategoria"].ToString())
+                            moneda = dr["moneda"].ToString(),
+                            idMoneda = int.Parse(dr["idMoneda"].ToString())
                         });
                     }
                 }
-                return Ok(listaCategorias);
+                return Ok(listaMonedas);
             }
             catch (Exception e)
             {
+                msj = e.Message;
                 cn.Close();
-                return BadRequest(e.Message);
+                return BadRequest(msj);
                 throw;
             }
             finally
@@ -58,29 +58,30 @@ namespace InventarioAPI.Controllers
 
         }
 
+
         [HttpPost]
-        [Route("/api/Categorias/registrarCategoria")]
-        public IActionResult registrarCategoria(Categoria objCategoria)
+        [Route("/api/Monedas/registrarMoneda")]
+        public IActionResult registrarMoneda(Moneda objMoneda)
         {
             Conexion objConexion = new Conexion(_IConfiguration);
             var cn = objConexion.getConexion();
-            string msj = "";
             try
             {
                 cn.Open();
-                using (SqlCommand cmd = new SqlCommand("spNuevaCategoria", cn))
+                using (SqlCommand cmd = new SqlCommand("spNuevaMoneda", cn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Add("@categoria", SqlDbType.NVarChar).Value = objCategoria.categoria;
+                    cmd.Parameters.Add("@moneda", SqlDbType.NVarChar).Value = objMoneda.moneda;
                     int i = cmd.ExecuteNonQuery();
 
-                    return Ok(new { msj = "Se a creado " + i + " categoria" });
+                    return Ok(new { msj = "Se a creado " + i + " moneda" });
                 }
             }
             catch (Exception e)
             {
                 cn.Close();
-                return BadRequest(e.Message);
+                msj = e.Message;
+                return BadRequest(msj);
                 throw;
             }
             finally
@@ -90,74 +91,76 @@ namespace InventarioAPI.Controllers
         }
 
         [HttpGet]
-        [Route("api/Categorias/getCategoria/{idCategoria}")]
-        public IActionResult getCategoria(int idCategoria)
+        [Route("api/Monedas/getMoneda/{idMoneda}")]
+        public IActionResult getMoneda(int idMoneda)
         {
             Conexion objConexion = new Conexion(_IConfiguration);
             var cn = objConexion.getConexion();
-            Categoria objCategoria = null;
+            Moneda objMoneda = null;
             try
             {
                 cn.Open();
-                using (SqlCommand cmd = new SqlCommand("spGetCategoria", cn))
+                using (SqlCommand cmd = new SqlCommand("spGetMoneda", cn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Add("@idCategoria", SqlDbType.Int).Value = idCategoria;
+                    cmd.Parameters.Add("@idMoneda", SqlDbType.Int).Value = idMoneda;
                     SqlDataReader dr = cmd.ExecuteReader();
                     while (dr.Read())
                     {
 
-                        objCategoria = new Categoria
+                        objMoneda = new Moneda
                         {
-                            categoria = dr["categoria"].ToString(),
-                            idCategoria = int.Parse(dr["idCategoria"].ToString())
+                            moneda = dr["moneda"].ToString(),
+                            idMoneda = int.Parse(dr["idMoneda"].ToString())
                         };
                     }
                 }
-                return Ok(objCategoria);
+                return Ok(objMoneda);
             }
             catch (Exception e)
             {
+                msj = e.Message;
                 cn.Close();
-                return BadRequest(e.Message);
+                return BadRequest(msj);
                 throw;
             }
             finally
             {
                 cn.Close();
+
             }
         }
 
         [HttpPut]
-        [Route("/api/Categorias/ActualizarCategoria")]
-        public IActionResult actualizarCategoria(Categoria objCategoria)
+        [Route("/api/Monedas/ActualizarMoneda")]
+        public IActionResult actualizarMoneda(Moneda objMoneda)
         {
             Conexion objConexion = new Conexion(_IConfiguration);
             var cn = objConexion.getConexion();
-            string msj = "";
             try
             {
                 cn.Open();
-                using (SqlCommand cmd = new SqlCommand("spActualizarCategoria", cn))
+                using (SqlCommand cmd = new SqlCommand("spActualizarMoneda", cn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Add("@idCategoria", SqlDbType.Int).Value = objCategoria.idCategoria;
-                    cmd.Parameters.Add("@categoria", SqlDbType.NVarChar).Value = objCategoria.categoria;
+                    cmd.Parameters.Add("@idMoneda", SqlDbType.Int).Value = objMoneda.idMoneda;
+                    cmd.Parameters.Add("@moneda", SqlDbType.NVarChar).Value = objMoneda.moneda;
                     int i = cmd.ExecuteNonQuery();
                     if (i == 1)
                     {
-                        return Ok(new { msj = "Se actualizó la categoría " });
+                        return Ok(new { msj = "Se actualizó la moneda " });
                     }
                     else
                     {
-                        return Ok(new { msj = "La categoría " + objCategoria.categoria + " no se actualizó" });
+                        return Ok(new { msj = "La moneda " + objMoneda.moneda + " no se actualizó" });
                     }
                 }
             }
             catch (Exception e)
             {
                 cn.Close();
-                return BadRequest(e.Message);
+                msj = e.Message;
+                return BadRequest(msj);
                 throw;
             }
             finally
@@ -167,8 +170,8 @@ namespace InventarioAPI.Controllers
         }
 
         [HttpDelete]
-        [Route("/api/Categorias/delCategoria/{idCategoria}")]
-        public IActionResult delCategoria(int idCategoria)
+        [Route("/api/Monedas/delMoneda/{idMoneda}")]
+        public IActionResult delMoneda(int idMoneda)
         {
             Conexion objConexion = new Conexion(_IConfiguration);
             var cn = objConexion.getConexion();
@@ -176,24 +179,25 @@ namespace InventarioAPI.Controllers
             try
             {
                 cn.Open();
-                using (SqlCommand cmd = new SqlCommand("spDelCategoria", cn))
+                using (SqlCommand cmd = new SqlCommand("spEliminarMoneda", cn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Add("@idCategoria", SqlDbType.Int).Value = idCategoria;
+                    cmd.Parameters.Add("@idMoneda", SqlDbType.Int).Value = idMoneda;
                     int i = cmd.ExecuteNonQuery();
                     if (i == 1)
                     {
-                        return Ok(new { msj = "Se a eliminado " + i + " categoria." });
+                        return Ok(new { msj = "Se a eliminado " + i + " moneda." });
                     }
                     else
                     {
-                        return Ok(new { msj = "La categoría no se eliminó" });
+                        return Ok(new { msj = "La Moneda no se eliminó" });
                     }
                 }
             }
             catch (Exception e)
             {
                 cn.Close();
+                msj = e.Message;
                 return BadRequest(e.Message);
                 throw;
             }
