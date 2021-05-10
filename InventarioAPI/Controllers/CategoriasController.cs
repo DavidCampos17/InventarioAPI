@@ -45,10 +45,10 @@ namespace InventarioAPI.Controllers
                 }
                 return Ok(listaCategorias);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return BadRequest();
                 cn.Close();
+                return BadRequest(e.Message);
                 throw;
             }
             finally
@@ -77,10 +77,10 @@ namespace InventarioAPI.Controllers
                     return Ok(new { msj = "Se a creado " + i + " categoria" });
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 cn.Close();
-                return BadRequest();
+                return BadRequest(e.Message);
                 throw;
             }
             finally
@@ -116,10 +116,10 @@ namespace InventarioAPI.Controllers
                 }
                 return Ok(objCategoria);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return BadRequest();
                 cn.Close();
+                return BadRequest(e.Message);
                 throw;
             }
             finally
@@ -154,10 +154,10 @@ namespace InventarioAPI.Controllers
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 cn.Close();
-                return BadRequest();
+                return BadRequest(e.Message);
                 throw;
             }
             finally
@@ -191,10 +191,10 @@ namespace InventarioAPI.Controllers
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return BadRequest();
                 cn.Close();
+                return BadRequest(e.Message);
                 throw;
             }
             finally
