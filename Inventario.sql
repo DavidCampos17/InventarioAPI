@@ -240,3 +240,30 @@ create proc spEliminarColor (@idColor int)
 as
 	delete Colores where idcolor=@idColor
 go
+
+/*MONEDAS*/
+
+create proc spNuevaMoneda(@moneda nvarchar(50))
+as
+	insert into Monedas(moneda) values(@moneda)
+go
+
+create proc spGetMonedas
+as
+	select idMoneda, moneda from Monedas
+go
+
+create proc spGetMoneda(@idMoneda int)
+as
+	select idMoneda, moneda from Monedas where idMoneda = @idMoneda;
+go
+
+create proc spActualizarMoneda(@idMoneda int, @moneda nvarchar(50) )
+as
+	update Monedas set moneda = @moneda where idMoneda= @idMoneda;
+go
+
+create proc spEliminarMoneda (@idMoneda int)
+as
+	delete Monedas where idMoneda=@idMoneda
+go
