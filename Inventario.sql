@@ -267,3 +267,57 @@ create proc spEliminarMoneda (@idMoneda int)
 as
 	delete Monedas where idMoneda=@idMoneda
 go
+
+/*USUARIOS*/
+
+
+create proc spNuevaUsuario(
+@nombreUsuario nvarchar(20),
+@apellidoPadre nvarchar(20),
+@apellidoMadre nvarchar(20), 
+@correo nvarchar(50),
+@usuario nvarchar(50),
+@contrasena nvarchar(100)
+)
+as
+	insert into Usuarios
+		(nombreUsuario, apellidoPadre, apellidoMadre, correo, usuario, contrasena) 
+	values
+		(@nombreUsuario, @apellidoPadre, @apellidoMadre, @correo, @usuario, @contrasena)
+go
+
+create proc spGetUsuarios
+as
+	select idUsuario, usuario,nombreUsuario, apellidoPadre, apellidoMadre, correo, usuario from Usuarios
+go
+
+create proc spGetUsuario(@idUsuario int)
+as
+	select idUsuario, nombreUsuario, apellidoPadre, apellidoMadre, correo, usuario from Usuarios where idUsuario = @idUsuario;
+go
+
+create proc spActualizarUsuario(
+@idUsuario int, 
+@nombreUsuario nvarchar(20),
+@apellidoPadre nvarchar(20),
+@apellidoMadre nvarchar(20), 
+@correo nvarchar(50)
+)
+as
+	update Usuarios set 
+		nombreUsuario=@nombreUsuario,
+		apellidoPadre=@apellidoPadre,
+		apellidoMadre=@apellidoMadre,
+		correo=@correo
+	where idUsuario= @idUsuario;
+go
+
+create proc spEliminarUsuario (@idUsuario int)
+as
+	delete Usuarios where idUsuario=@idUsuario
+go
+
+create proc spCambiarContrasena(@idUsuario int, @contrasena nvarchar(100))
+as
+	update Usuarios set contrasena = @contrasena where idUsuario=@idUsuario
+go
