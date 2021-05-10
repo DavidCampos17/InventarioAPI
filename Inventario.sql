@@ -223,20 +223,20 @@ go
 
 create proc spGetColores
 as
-	select idcolor, color from Colores
+	select idColor, color from Colores
 go
 
-create proc spGetColor(@idcolor int)
+create proc spGetColor(@idColor int)
 as
-	select idcolor, color from Colores where idcolor = @idcolor;
+	select idcolor, color from Colores where idcolor = @idColor;
 go
 
-create proc spActualizarColor(@idcolor int, @color nvarchar(50) )
+create proc spActualizarColor(@idColor int, @color nvarchar(50) )
 as
-	update Colores set color = @color where idcolor= @idcolor;
+	update Colores set color = @color where idcolor= @idColor;
 go
 
-create proc spEliminarColor (@idcolor int)
+create proc spEliminarColor (@idColor int)
 as
-	delete Colores where idcolor=@idcolor
+	delete Colores where idcolor=@idColor
 go
