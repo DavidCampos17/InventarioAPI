@@ -196,7 +196,7 @@ go
 
 create proc spGetMarcas
 as
-	select marca from Marcas
+	select idMarca, marca from Marcas
 go
 
 create proc spGetMarca(@idMarca int)
