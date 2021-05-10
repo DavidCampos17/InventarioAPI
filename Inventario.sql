@@ -214,3 +214,29 @@ as
 	delete Marcas where idMarca=@idMarca
 go
 
+/*CRUD COLORES*/
+
+create proc spNuevaColor(@color nvarchar(50))
+as
+	insert into Colores(color) values(@color)
+go
+
+create proc spGetColores
+as
+	select idcolor, color from Colores
+go
+
+create proc spGetColor(@idcolor int)
+as
+	select idcolor, color from Colores where idcolor = @idcolor;
+go
+
+create proc spActualizarColor(@idcolor int, @color nvarchar(50) )
+as
+	update Colores set color = @color where idcolor= @idcolor;
+go
+
+create proc spEliminarColor (@idcolor int)
+as
+	delete Colores where idcolor=@idcolor
+go
